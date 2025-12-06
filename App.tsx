@@ -106,12 +106,15 @@ const App: React.FC = () => {
   // Responsive default view
   useEffect(() => {
     const handleResize = () => {
+      // Prevent SPLIT view on small screens
       if (window.innerWidth < 768 && viewMode === ViewMode.SPLIT) {
         setViewMode(ViewMode.EDIT);
       }
     };
     
-    if (window.innerWidth < 768) {
+    // Initial check: Only switch to EDIT if we are currently in SPLIT mode and on a small screen.
+    // This allows users to stay in PREVIEW mode on mobile if they choose to.
+    if (window.innerWidth < 768 && viewMode === ViewMode.SPLIT) {
       setViewMode(ViewMode.EDIT);
     }
 

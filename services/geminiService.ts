@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { AiActionType } from "../types";
 
-const apiKey = process.env.API_KEY || '';
-
 // Initialize specific model for text tasks
 const MODEL_NAME = 'gemini-2.5-flash';
 
@@ -25,7 +23,7 @@ export const performAiAction = async (
   text: string,
   action: AiActionType
 ): Promise<string> => {
-  if (!apiKey) {
+  if (!process.env.API_KEY) {
     throw new Error("API Key is missing. Please check your environment variables.");
   }
 
@@ -34,7 +32,7 @@ export const performAiAction = async (
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
       model: MODEL_NAME,

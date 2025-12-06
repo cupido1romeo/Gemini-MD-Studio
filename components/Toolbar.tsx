@@ -84,18 +84,19 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const activeBg = isDark ? 'bg-gray-800' : 'bg-gray-200';
 
   return (
-    <div className={`h-14 ${bgColor} ${borderColor} border-b flex items-center justify-between px-4 select-none shrink-0 transition-colors duration-300`}>
-      <div className="flex items-center space-x-2">
-        <span className="text-blue-500 font-bold text-lg mr-2 tracking-tight flex items-center gap-2">
-          <FileText className="w-5 h-5" /> MD Studio
+    <div className={`h-14 ${bgColor} ${borderColor} border-b flex items-center justify-between px-4 select-none shrink-0 transition-colors duration-300 overflow-x-auto`}>
+      <div className="flex items-center space-x-2 shrink-0">
+        <span className="text-blue-500 font-bold text-lg mr-2 tracking-tight flex items-center gap-2 shrink-0">
+          <FileText className="w-5 h-5" /> 
+          <span className="hidden sm:inline">MD Studio</span>
         </span>
         
-        <span className={`text-xs italic hidden sm:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`} title={saveStatus}>
+        <span className={`text-xs italic hidden md:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`} title={saveStatus}>
           {saveStatus}
         </span>
 
         {/* View Toggles */}
-        <div className={`flex rounded-lg p-1 space-x-1 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        <div className={`flex rounded-lg p-1 space-x-1 shrink-0 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
           <button
             onClick={() => setViewMode(ViewMode.EDIT)}
             className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.EDIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
@@ -123,7 +124,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         {viewMode === ViewMode.SPLIT && (
            <button
              onClick={toggleLayout}
-             className={`p-1.5 rounded-md transition-colors hidden md:block ${hoverBg} ${textColor}`}
+             className={`p-1.5 rounded-md transition-colors hidden md:block shrink-0 ${hoverBg} ${textColor}`}
              title={`Switch to ${layout === 'horizontal' ? 'Vertical' : 'Horizontal'} Layout`}
            >
              {layout === 'horizontal' ? <Rows size={16} /> : <Columns size={16} className="rotate-90" />}
@@ -131,9 +132,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
         )}
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 shrink-0">
          {/* Undo/Redo */}
-         <div className={`flex items-center space-x-1 mr-2 rounded-lg p-1 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+         <div className={`flex items-center space-x-1 mr-2 rounded-lg p-1 shrink-0 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <button
               onClick={onUndo}
               disabled={!canUndo}
@@ -153,7 +154,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
          </div>
 
          {/* Search Bar */}
-         <div className="relative group mx-2 hidden sm:block">
+         <div className="relative group mx-2 hidden sm:block shrink-0">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className={`h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
           </div>
@@ -169,14 +170,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className={`p-2 rounded-md transition-colors ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
+          className={`p-2 rounded-md transition-colors shrink-0 ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
           title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
         {/* AI Actions Dropdown Group */}
-        <div className="relative group mr-2">
+        <div className="relative group mr-2 shrink-0">
           <button 
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isAiLoading ? 'bg-purple-900/50 text-purple-300 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
             disabled={isAiLoading}
@@ -204,11 +205,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
           )}
         </div>
 
-        <div className={`w-px h-6 mx-2 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
+        <div className={`w-px h-6 mx-2 shrink-0 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
 
         <button 
           onClick={onClear}
-          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
+          className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
           title="Clear Editor"
         >
           <Trash2 size={18} />
@@ -216,7 +217,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <button 
           onClick={() => fileInputRef.current?.click()}
-          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
+          className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
           title="Open Markdown File"
         >
           <Upload size={18} />
@@ -231,7 +232,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <button 
           onClick={onDownload}
-          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
+          className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
           title="Save to Disk"
         >
           <Download size={18} />
