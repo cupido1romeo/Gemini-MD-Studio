@@ -4,6 +4,9 @@ export enum ViewMode {
   SPLIT = 'SPLIT'
 }
 
+export type Theme = 'light' | 'dark';
+export type Layout = 'horizontal' | 'vertical';
+
 export interface AiResponse {
   success: boolean;
   text?: string;

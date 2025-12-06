@@ -1,5 +1,6 @@
 import React from 'react';
 import Editor from 'react-simple-code-editor';
+import { Theme } from '../types';
 
 interface EditorProps {
   value: string;
@@ -8,6 +9,7 @@ interface EditorProps {
   searchTerm?: string;
   onUndo: () => void;
   onRedo: () => void;
+  theme: Theme;
 }
 
 // Access the global Prism object loaded via CDN
@@ -23,7 +25,8 @@ const MarkdownEditor: React.FC<EditorProps> = ({
   visible, 
   searchTerm,
   onUndo,
-  onRedo
+  onRedo,
+  theme
 }) => {
   if (!visible) return null;
 
@@ -59,14 +62,10 @@ const MarkdownEditor: React.FC<EditorProps> = ({
         const regex = new RegExp(`(${escaped})`, 'gi');
         
         // We split by HTML tags to ensure we only replace text content and not HTML attributes or tag names.
-        // Prism returns HTML strings (e.g. <span class="token...">text</span>).
-        // By splitting with `/(<[^>]*>)/g`, the array will contain ["text", "<tag>", "text", ...].
         return html.split(/(<[^>]*>)/g).map((part) => {
-          // If it looks like a tag, return it as is
           if (part.startsWith('<')) {
             return part;
           }
-          // Otherwise it is text content, safe to replace
           return part.replace(regex, '<mark style="background-color: #d97706; color: white; border-radius: 2px;">$1</mark>');
         }).join('');
       } catch (e) {
@@ -78,9 +77,11 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     return html;
   };
 
+  const isDark = theme === 'dark';
+
   return (
     <div 
-      className="h-full w-full bg-gray-900 flex flex-col overflow-hidden editor-container"
+      className={`h-full w-full flex flex-col overflow-hidden editor-container transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}
       onKeyDown={handleKeyDown}
     >
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -95,7 +96,7 @@ const MarkdownEditor: React.FC<EditorProps> = ({
             fontSize: 14,
             lineHeight: '1.5rem',
             backgroundColor: 'transparent', 
-            color: '#e2e8f0'
+            color: isDark ? '#e2e8f0' : '#1f2937'
           }}
           textareaClassName="focus:outline-none"
           placeholder="# Start writing..."

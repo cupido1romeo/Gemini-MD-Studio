@@ -9,9 +9,12 @@ import {
   Trash2,
   Search,
   Undo,
-  Redo
+  Redo,
+  Sun,
+  Moon,
+  Rows
 } from 'lucide-react';
-import { ViewMode, AiActionType } from '../types';
+import { ViewMode, AiActionType, Theme, Layout } from '../types';
 
 interface ToolbarProps {
   viewMode: ViewMode;
@@ -27,6 +30,11 @@ interface ToolbarProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  saveStatus: string;
+  theme: Theme;
+  toggleTheme: () => void;
+  layout: Layout;
+  toggleLayout: () => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -42,7 +50,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onUndo,
   onRedo,
   canUndo,
-  canRedo
+  canRedo,
+  saveStatus,
+  theme,
+  toggleTheme,
+  layout,
+  toggleLayout
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,46 +74,70 @@ const Toolbar: React.FC<ToolbarProps> = ({
     e.target.value = '';
   };
 
+  const isDark = theme === 'dark';
+  const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
+  const borderColor = isDark ? 'border-gray-700' : 'border-gray-200';
+  const textColor = isDark ? 'text-gray-300' : 'text-gray-700';
+  const inputBg = isDark ? 'bg-gray-800' : 'bg-gray-100';
+  const inputBorder = isDark ? 'border-gray-700' : 'border-gray-300';
+  const hoverBg = isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100';
+  const activeBg = isDark ? 'bg-gray-800' : 'bg-gray-200';
+
   return (
-    <div className="h-14 bg-gray-900 border-b border-gray-700 flex items-center justify-between px-4 select-none shrink-0">
+    <div className={`h-14 ${bgColor} ${borderColor} border-b flex items-center justify-between px-4 select-none shrink-0 transition-colors duration-300`}>
       <div className="flex items-center space-x-2">
-        <span className="text-blue-400 font-bold text-lg mr-4 tracking-tight flex items-center gap-2">
+        <span className="text-blue-500 font-bold text-lg mr-2 tracking-tight flex items-center gap-2">
           <FileText className="w-5 h-5" /> MD Studio
         </span>
         
+        <span className={`text-xs italic hidden sm:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`} title={saveStatus}>
+          {saveStatus}
+        </span>
+
         {/* View Toggles */}
-        <div className="flex bg-gray-800 rounded-lg p-1 space-x-1">
+        <div className={`flex rounded-lg p-1 space-x-1 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
           <button
             onClick={() => setViewMode(ViewMode.EDIT)}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.EDIT ? 'bg-gray-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.EDIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
             title="Edit Only"
           >
             <FileText size={16} />
           </button>
           <button
             onClick={() => setViewMode(ViewMode.SPLIT)}
-            className={`p-1.5 rounded-md transition-colors hidden md:block ${viewMode === ViewMode.SPLIT ? 'bg-gray-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            className={`p-1.5 rounded-md transition-colors hidden md:block ${viewMode === ViewMode.SPLIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
             title="Split View"
           >
             <Columns size={16} />
           </button>
           <button
             onClick={() => setViewMode(ViewMode.PREVIEW)}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.PREVIEW ? 'bg-gray-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.PREVIEW ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
             title="Preview Only"
           >
             <Eye size={16} />
           </button>
         </div>
+
+        {/* Layout Toggle (Only visible in Split View) */}
+        {viewMode === ViewMode.SPLIT && (
+           <button
+             onClick={toggleLayout}
+             className={`p-1.5 rounded-md transition-colors hidden md:block ${hoverBg} ${textColor}`}
+             title={`Switch to ${layout === 'horizontal' ? 'Vertical' : 'Horizontal'} Layout`}
+           >
+             {layout === 'horizontal' ? <Rows size={16} /> : <Columns size={16} className="rotate-90" />}
+           </button>
+        )}
       </div>
 
       <div className="flex items-center space-x-2">
          {/* Undo/Redo */}
-         <div className="flex items-center space-x-1 mr-2 bg-gray-800 rounded-lg p-1">
+         <div className={`flex items-center space-x-1 mr-2 rounded-lg p-1 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <button
               onClick={onUndo}
               disabled={!canUndo}
-              className={`p-1.5 rounded-md transition-colors ${canUndo ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 cursor-not-allowed'}`}
+              className={`p-1.5 rounded-md transition-colors ${canUndo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
               title="Undo (Ctrl+Z)"
             >
               <Undo size={16} />
@@ -108,7 +145,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <button
               onClick={onRedo}
               disabled={!canRedo}
-              className={`p-1.5 rounded-md transition-colors ${canRedo ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 cursor-not-allowed'}`}
+              className={`p-1.5 rounded-md transition-colors ${canRedo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
               title="Redo (Ctrl+Y)"
             >
               <Redo size={16} />
@@ -118,16 +155,25 @@ const Toolbar: React.FC<ToolbarProps> = ({
          {/* Search Bar */}
          <div className="relative group mx-2 hidden sm:block">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-500" />
+            <Search className={`h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
           </div>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="block w-full pl-10 pr-3 py-1.5 border border-gray-700 rounded-md leading-5 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:bg-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
+            className={`block w-full pl-10 pr-3 py-1.5 border rounded-md leading-5 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200 ${inputBg} ${inputBorder} ${textColor} ${isDark ? 'placeholder-gray-500 focus:bg-gray-700' : 'placeholder-gray-400 focus:bg-white'}`}
             placeholder="Find text..."
           />
         </div>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-md transition-colors ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
+          title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
 
         {/* AI Actions Dropdown Group */}
         <div className="relative group mr-2">
@@ -141,28 +187,28 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </button>
           
           {!isAiLoading && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-xl overflow-hidden z-50 hidden group-hover:block">
-              <button onClick={() => onAiAction(AiActionType.PROOFREAD)} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+            <div className={`absolute right-0 top-full mt-1 w-48 border rounded-md shadow-xl overflow-hidden z-50 hidden group-hover:block ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+              <button onClick={() => onAiAction(AiActionType.PROOFREAD)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
                 Proofread & Fix
               </button>
-              <button onClick={() => onAiAction(AiActionType.CONTINUE)} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+              <button onClick={() => onAiAction(AiActionType.CONTINUE)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
                 Continue Writing
               </button>
-              <button onClick={() => onAiAction(AiActionType.SUMMARIZE)} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+              <button onClick={() => onAiAction(AiActionType.SUMMARIZE)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
                 Generate Summary
               </button>
-               <button onClick={() => onAiAction(AiActionType.FORMAT)} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+               <button onClick={() => onAiAction(AiActionType.FORMAT)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
                 Format Document
               </button>
             </div>
           )}
         </div>
 
-        <div className="w-px h-6 bg-gray-700 mx-2" />
+        <div className={`w-px h-6 mx-2 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
 
         <button 
           onClick={onClear}
-          className="p-2 text-gray-400 hover:text-red-400 transition-colors rounded-md hover:bg-gray-800"
+          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
           title="Clear Editor"
         >
           <Trash2 size={18} />
@@ -170,7 +216,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <button 
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-400 hover:text-blue-400 transition-colors rounded-md hover:bg-gray-800"
+          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
           title="Open Markdown File"
         >
           <Upload size={18} />
@@ -185,7 +231,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <button 
           onClick={onDownload}
-          className="p-2 text-gray-400 hover:text-green-400 transition-colors rounded-md hover:bg-gray-800"
+          className={`p-2 transition-colors rounded-md ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
           title="Save to Disk"
         >
           <Download size={18} />

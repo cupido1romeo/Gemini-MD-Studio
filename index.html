@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gemini Markdown Studio</title>
     <!-- PrismJS Theme (Tomorrow Night for dark mode) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link id="prism-theme" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
       tailwind.config = {
@@ -13,9 +13,19 @@
           extend: {
             colors: {
               gray: {
+                50: '#f9fafb',
+                100: '#f3f4f6',
+                200: '#e5e7eb',
+                300: '#d1d5db',
+                400: '#9ca3af',
+                500: '#6b7280',
+                600: '#4b5563',
+                700: '#374151',
                 750: '#2d3748',
+                800: '#1f2937',
                 850: '#1a202c',
-                950: '#171923',
+                900: '#111827',
+                950: '#030712',
               }
             },
             typography: (theme) => ({
@@ -37,6 +47,24 @@
                   blockquote: { color: theme('colors.gray.400') },
                 },
               },
+              light: {
+                css: {
+                  color: theme('colors.gray.800'),
+                  a: {
+                    color: theme('colors.blue.600'),
+                    '&:hover': {
+                      color: theme('colors.blue.800'),
+                    },
+                  },
+                  h1: { color: theme('colors.gray.900') },
+                  h2: { color: theme('colors.gray.900') },
+                  h3: { color: theme('colors.gray.900') },
+                  h4: { color: theme('colors.gray.900') },
+                  code: { color: theme('colors.pink.600') },
+                  strong: { color: theme('colors.gray.900') },
+                  blockquote: { color: theme('colors.gray.600') },
+                },
+              },
             }),
           },
         },
@@ -49,7 +77,7 @@
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #1a202c; 
+        background: transparent; 
       }
       ::-webkit-scrollbar-thumb {
         background: #4a5568; 
