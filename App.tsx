@@ -5,6 +5,7 @@ import Preview from './components/Preview';
 import StatusBar from './components/StatusBar';
 import { ViewMode, AiActionType, Theme, Layout } from './types';
 import { performAiAction } from './services/geminiService';
+import { Upload } from 'lucide-react';
 
 const STORAGE_KEY = 'gemini_md_content';
 const THEME_KEY = 'gemini_md_theme';
@@ -52,6 +53,8 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [notification, setNotification] = useState<{msg: string, type: 'error' | 'success'} | null>(null);
   const [saveStatus, setSaveStatus] = useState<string>('All changes saved');
+  const [selectedText, setSelectedText] = useState<string>('');
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   
   // Theme and Layout State
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(THEME_KEY) as Theme) || 'dark');
@@ -205,6 +208,16 @@ const App: React.FC = () => {
     setNotification({ msg: 'File loaded successfully', type: 'success' });
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setNotification({ msg: 'Copied to clipboard', type: 'success' });
+    } catch (err) {
+      console.error('Failed to copy', err);
+      setNotification({ msg: 'Failed to copy to clipboard', type: 'error' });
+    }
+  };
+
   const handleAiAction = async (action: AiActionType) => {
     if (!content.trim()) {
       setNotification({ msg: 'Editor is empty', type: 'error' });
@@ -242,12 +255,64 @@ const App: React.FC = () => {
     }
   };
 
+  // Drag and Drop Handlers
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // Simple extension check
+      if (
+        file.name.endsWith('.md') || 
+        file.name.endsWith('.txt') || 
+        file.name.endsWith('.markdown') || 
+        file.type === 'text/markdown' || 
+        file.type === 'text/plain'
+      ) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            handleUpload(event.target.result as string);
+          }
+        };
+        reader.readAsText(file);
+      } else {
+        setNotification({ msg: 'Please drop a valid Markdown or Text file', type: 'error' });
+      }
+    }
+  };
+
   const canUndo = historyIndex > 0 || content !== history[historyIndex];
   const canRedo = historyIndex < history.length - 1 && content === history[historyIndex];
   const isDark = theme === 'dark';
 
   return (
-    <div className={`flex flex-col h-screen w-screen overflow-hidden transition-colors duration-300 ${isDark ? 'bg-gray-900 text-gray-200' : 'bg-gray-50 text-gray-900'}`}>
+    <div 
+      className={`flex flex-col h-screen w-screen overflow-hidden transition-colors duration-300 ${isDark ? 'bg-gray-900 text-gray-200' : 'bg-gray-50 text-gray-900'}`}
+      onDragEnter={handleDragEnter}
+    >
       <Toolbar 
         viewMode={viewMode}
         setViewMode={setViewMode}
@@ -260,6 +325,7 @@ const App: React.FC = () => {
           setHistory(prev => [...prev.slice(0, historyIndex + 1), empty]);
           setHistoryIndex(prev => prev + 1);
         }}
+        onCopy={handleCopy}
         onAiAction={handleAiAction}
         isAiLoading={isAiLoading}
         searchTerm={searchTerm}
@@ -293,6 +359,7 @@ const App: React.FC = () => {
             onUndo={handleUndo}
             onRedo={handleRedo}
             theme={theme}
+            onSelectionChange={setSelectedText}
           />
         </div>
 
@@ -320,7 +387,25 @@ const App: React.FC = () => {
         )}
       </div>
 
-      <StatusBar content={content} theme={theme} />
+      <StatusBar content={content} selectedText={selectedText} theme={theme} />
+
+      {/* Drag & Drop Overlay */}
+      {isDragging && (
+        <div 
+          className="fixed inset-0 z-[100] bg-blue-500/10 backdrop-blur-sm border-4 border-blue-500 border-dashed m-4 rounded-xl flex items-center justify-center transition-all duration-200"
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <div className={`
+            flex flex-col items-center gap-4 px-10 py-8 rounded-2xl shadow-2xl pointer-events-none
+            ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
+          `}>
+            <Upload size={48} className="text-blue-500 animate-bounce" />
+            <span className="text-2xl font-bold">Drop Markdown file to open</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -10,6 +10,7 @@ interface EditorProps {
   onUndo: () => void;
   onRedo: () => void;
   theme: Theme;
+  onSelectionChange: (text: string) => void;
 }
 
 // Access the global Prism object loaded via CDN
@@ -26,7 +27,8 @@ const MarkdownEditor: React.FC<EditorProps> = ({
   searchTerm,
   onUndo,
   onRedo,
-  theme
+  theme,
+  onSelectionChange
 }) => {
   if (!visible) return null;
 
@@ -43,6 +45,18 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     ) {
       e.preventDefault();
       onRedo();
+    }
+  };
+
+  const handleSelectionCheck = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const target = e.currentTarget;
+    const start = target.selectionStart;
+    const end = target.selectionEnd;
+    
+    if (start !== end) {
+      onSelectionChange(value.substring(start, end));
+    } else {
+      onSelectionChange('');
     }
   };
 
@@ -90,6 +104,9 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onValueChange={onChange}
           highlight={highlight}
           padding={24}
+          onSelect={handleSelectionCheck}
+          onKeyUp={handleSelectionCheck}
+          onClick={handleSelectionCheck}
           className="font-mono text-sm min-h-full"
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
