@@ -81,7 +81,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const inputBg = isDark ? 'bg-gray-800' : 'bg-gray-100';
   const inputBorder = isDark ? 'border-gray-700' : 'border-gray-300';
   const hoverBg = isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100';
-  const activeBg = isDark ? 'bg-gray-800' : 'bg-gray-200';
 
   return (
     <div className={`h-14 ${bgColor} ${borderColor} border-b flex items-center justify-between px-4 select-none shrink-0 transition-colors duration-300 overflow-x-auto`}>
