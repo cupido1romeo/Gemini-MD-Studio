@@ -125,12 +125,46 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [viewMode]);
 
+  // Global Drag and Drop Listeners
+  useEffect(() => {
+    const handleWindowDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Check if we are dragging files to avoid triggering on text selection drags
+      // types is a DOMStringList, usually contains "Files" when dragging files
+      if (e.dataTransfer?.types?.includes('Files')) {
+        setIsDragging(true);
+      }
+    };
+
+    const handleWindowDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer?.types?.includes('Files')) {
+         // Necessary to allow dropping
+         e.dataTransfer.dropEffect = 'copy';
+      }
+    };
+
+    window.addEventListener('dragenter', handleWindowDragEnter);
+    window.addEventListener('dragover', handleWindowDragOver);
+
+    return () => {
+      window.removeEventListener('dragenter', handleWindowDragEnter);
+      window.removeEventListener('dragover', handleWindowDragOver);
+    };
+  }, []);
+
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => setNotification(null), 3000);
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  const showToast = (msg: string, type: 'error' | 'success' = 'success') => {
+    setNotification({ msg, type });
+  };
 
   const handleEditorChange = (newVal: string) => {
     setContent(newVal);
@@ -197,7 +231,7 @@ const App: React.FC = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setNotification({ msg: 'File downloaded successfully', type: 'success' });
+    showToast('File downloaded successfully');
   };
 
   const handleUpload = (newContent: string) => {
@@ -205,22 +239,22 @@ const App: React.FC = () => {
     setSaveStatus('Unsaved changes...');
     setHistory(prev => [...prev.slice(0, historyIndex + 1), newContent]);
     setHistoryIndex(prev => prev + 1);
-    setNotification({ msg: 'File loaded successfully', type: 'success' });
+    showToast('File loaded successfully');
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content);
-      setNotification({ msg: 'Copied to clipboard', type: 'success' });
+      showToast('Copied to clipboard');
     } catch (err) {
       console.error('Failed to copy', err);
-      setNotification({ msg: 'Failed to copy to clipboard', type: 'error' });
+      showToast('Failed to copy to clipboard', 'error');
     }
   };
 
   const handleAiAction = async (action: AiActionType) => {
     if (!content.trim()) {
-      setNotification({ msg: 'Editor is empty', type: 'error' });
+      showToast('Editor is empty', 'error');
       return;
     }
 
@@ -231,13 +265,13 @@ const App: React.FC = () => {
 
       if (action === AiActionType.SUMMARIZE) {
         newContent = `${content}\n\n## AI Summary\n\n${result}`;
-        setNotification({ msg: 'Summary appended to document', type: 'success' });
+        showToast('Summary appended to document');
       } else if (action === AiActionType.CONTINUE) {
         newContent = `${content}\n${result}`;
-         setNotification({ msg: 'Content generated', type: 'success' });
+        showToast('Content generated');
       } else {
         newContent = result;
-        setNotification({ msg: 'Text updated by AI', type: 'success' });
+        showToast('Text updated by AI');
       }
 
       setContent(newContent);
@@ -246,27 +280,17 @@ const App: React.FC = () => {
       setHistoryIndex(prev => prev + 1);
 
     } catch (error) {
-      setNotification({ 
-        msg: error instanceof Error ? error.message : "AI Action failed", 
-        type: 'error' 
-      });
+      showToast(error instanceof Error ? error.message : "AI Action failed", 'error');
     } finally {
       setIsAiLoading(false);
     }
   };
 
-  // Drag and Drop Handlers
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      setIsDragging(true);
-    }
-  };
-
+  // Drag and Drop Handlers for the Overlay
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Only close if we are leaving the overlay (which covers the screen)
     setIsDragging(false);
   };
 
@@ -299,7 +323,7 @@ const App: React.FC = () => {
         };
         reader.readAsText(file);
       } else {
-        setNotification({ msg: 'Please drop a valid Markdown or Text file', type: 'error' });
+        showToast('Please drop a valid Markdown or Text file', 'error');
       }
     }
   };
@@ -311,7 +335,6 @@ const App: React.FC = () => {
   return (
     <div 
       className={`flex flex-col h-screen w-screen overflow-hidden transition-colors duration-300 ${isDark ? 'bg-gray-900 text-gray-200' : 'bg-gray-50 text-gray-900'}`}
-      onDragEnter={handleDragEnter}
     >
       <Toolbar 
         viewMode={viewMode}
@@ -373,6 +396,7 @@ const App: React.FC = () => {
             content={content} 
             visible={true} 
             theme={theme}
+            onNotify={showToast}
           />
         </div>
         
@@ -392,7 +416,7 @@ const App: React.FC = () => {
       {/* Drag & Drop Overlay */}
       {isDragging && (
         <div 
-          className="fixed inset-0 z-[100] bg-blue-500/10 backdrop-blur-sm border-4 border-blue-500 border-dashed m-4 rounded-xl flex items-center justify-center transition-all duration-200"
+          className="fixed inset-0 z-[200] bg-blue-500/10 backdrop-blur-sm border-4 border-blue-500 border-dashed m-4 rounded-xl flex items-center justify-center transition-all duration-200"
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
