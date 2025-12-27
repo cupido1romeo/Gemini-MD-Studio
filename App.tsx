@@ -7,6 +7,17 @@ import { ViewMode, AiActionType, Theme, Layout } from './types';
 import { performAiAction } from './services/geminiService';
 import { Upload } from 'lucide-react';
 
+// Electron API exposed via preload.js
+declare global {
+  interface Window {
+    electron: {
+      openFile: () => Promise<{ canceled: boolean; filePath?: string; content?: string; error?: string }>;
+      saveFile: (args: { filePath?: string, content: string }) => Promise<{ canceled: boolean; filePath?: string; error?: string }>;
+      saveFileAs: (content: string) => Promise<{ canceled: boolean; filePath?: string; error?: string }>;
+    };
+  }
+}
+
 const STORAGE_KEY = 'gemini_md_content';
 const THEME_KEY = 'gemini_md_theme';
 const LAYOUT_KEY = 'gemini_md_layout';
@@ -47,6 +58,7 @@ const App: React.FC = () => {
   const [content, setContent] = useState<string>(getInitialContent);
   const [history, setHistory] = useState<string[]>([getInitialContent()]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [currentFilePath, setCurrentFilePath] = useState<string | undefined>(undefined);
 
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.SPLIT);
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
@@ -91,19 +103,20 @@ const App: React.FC = () => {
     localStorage.setItem(LAYOUT_KEY, layout);
   }, [layout]);
 
-  // Autosave effect
+  // Autosave effect (for web version)
   useEffect(() => {
-    const saveTimeout = setTimeout(() => {
-      try {
-        localStorage.setItem(STORAGE_KEY, content);
-        setSaveStatus('All changes saved');
-      } catch (e) {
-        console.warn('Failed to save to localStorage', e);
-        setSaveStatus('Error saving');
-      }
-    }, 2000);
-
-    return () => clearTimeout(saveTimeout);
+    if (typeof window.electron === 'undefined') {
+      const saveTimeout = setTimeout(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, content);
+          setSaveStatus('All changes saved');
+        } catch (e) {
+          console.warn('Failed to save to localStorage', e);
+          setSaveStatus('Error saving');
+        }
+      }, 2000);
+      return () => clearTimeout(saveTimeout);
+    }
   }, [content]);
 
   // Responsive default view
@@ -115,8 +128,6 @@ const App: React.FC = () => {
       }
     };
     
-    // Initial check: Only switch to EDIT if we are currently in SPLIT mode and on a small screen.
-    // This allows users to stay in PREVIEW mode on mobile if they choose to.
     if (window.innerWidth < 768 && viewMode === ViewMode.SPLIT) {
       setViewMode(ViewMode.EDIT);
     }
@@ -130,8 +141,6 @@ const App: React.FC = () => {
     const handleWindowDragEnter = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      // Check if we are dragging files to avoid triggering on text selection drags
-      // types is a DOMStringList, usually contains "Files" when dragging files
       if (e.dataTransfer?.types?.includes('Files')) {
         setIsDragging(true);
       }
@@ -141,7 +150,6 @@ const App: React.FC = () => {
       e.preventDefault();
       e.stopPropagation();
       if (e.dataTransfer?.types?.includes('Files')) {
-         // Necessary to allow dropping
          e.dataTransfer.dropEffect = 'copy';
       }
     };
@@ -242,6 +250,53 @@ const App: React.FC = () => {
     showToast('File loaded successfully');
   };
 
+  const handleOpenFile = async () => {
+    if (window.electron) {
+      const result = await window.electron.openFile();
+      if (!result.canceled && result.content) {
+        setContent(result.content);
+        setCurrentFilePath(result.filePath);
+        setSaveStatus('File loaded');
+        showToast('File opened successfully');
+      } else if (result.error) {
+        showToast(result.error, 'error');
+      }
+    } else {
+      showToast('File operations only available in the desktop app.', 'error');
+    }
+  };
+
+  const handleSaveFile = async () => {
+    if (window.electron) {
+      const result = await window.electron.saveFile({ filePath: currentFilePath, content });
+      if (!result.canceled && result.filePath) {
+        setCurrentFilePath(result.filePath);
+        setSaveStatus('All changes saved');
+        showToast('File saved successfully');
+      } else if (result.error) {
+        showToast(result.error, 'error');
+      }
+    } else {
+      showToast('File operations only available in the desktop app.', 'error');
+    }
+  };
+
+  const handleSaveFileAs = async () => {
+    if (window.electron) {
+      const result = await window.electron.saveFileAs(content);
+      if (!result.canceled && result.filePath) {
+        setCurrentFilePath(result.filePath);
+        setSaveStatus('All changes saved');
+        showToast('File saved successfully');
+      } else if (result.error) {
+        showToast(result.error, 'error');
+      }
+    } else {
+      showToast('File operations only available in the desktop app.', 'error');
+    }
+  };
+
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content);
@@ -290,7 +345,6 @@ const App: React.FC = () => {
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only close if we are leaving the overlay (which covers the screen)
     setIsDragging(false);
   };
 
@@ -307,7 +361,6 @@ const App: React.FC = () => {
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       const file = files[0];
-      // Simple extension check
       if (
         file.name.endsWith('.md') || 
         file.name.endsWith('.txt') || 
@@ -331,6 +384,7 @@ const App: React.FC = () => {
   const canUndo = historyIndex > 0 || content !== history[historyIndex];
   const canRedo = historyIndex < history.length - 1 && content === history[historyIndex];
   const isDark = theme === 'dark';
+  const isElectron = typeof window.electron !== 'undefined';
 
   return (
     <div 
@@ -347,6 +401,7 @@ const App: React.FC = () => {
           setSaveStatus('Unsaved changes...');
           setHistory(prev => [...prev.slice(0, historyIndex + 1), empty]);
           setHistoryIndex(prev => prev + 1);
+          setCurrentFilePath(undefined);
         }}
         onCopy={handleCopy}
         onAiAction={handleAiAction}
@@ -362,6 +417,10 @@ const App: React.FC = () => {
         toggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
         layout={layout}
         toggleLayout={() => setLayout(prev => prev === 'horizontal' ? 'vertical' : 'horizontal')}
+        isElectron={isElectron}
+        onOpenFile={handleOpenFile}
+        onSaveFile={handleSaveFile}
+        onSaveFileAs={handleSaveFileAs}
       />
 
       {/* Main Content Area */}
