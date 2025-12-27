@@ -104,9 +104,9 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onValueChange={onChange}
           highlight={highlight}
           padding={24}
-          onSelect={handleSelectionCheck}
-          onKeyUp={handleSelectionCheck}
-          onClick={handleSelectionCheck}
+          onSelect={handleSelectionCheck as any}
+          onKeyUp={handleSelectionCheck as any}
+          onClick={handleSelectionCheck as any}
           className="font-mono text-sm min-h-full"
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',

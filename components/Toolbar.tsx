@@ -13,7 +13,10 @@ import {
   Sun,
   Moon,
   Rows,
-  Copy
+  Copy,
+  Save,
+  FileUp,
+  FolderOpen
 } from 'lucide-react';
 import { ViewMode, AiActionType, Theme, Layout } from '../types';
 
@@ -37,6 +40,10 @@ interface ToolbarProps {
   toggleTheme: () => void;
   layout: Layout;
   toggleLayout: () => void;
+  isElectron: boolean;
+  onOpenFile: () => void;
+  onSaveFile: () => void;
+  onSaveFileAs: () => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -58,7 +65,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
   theme,
   toggleTheme,
   layout,
-  toggleLayout
+  toggleLayout,
+  isElectron,
+  onOpenFile,
+  onSaveFile,
+  onSaveFileAs,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const aiButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,12 +101,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
     if (aiButtonRef.current) {
       const rect = aiButtonRef.current.getBoundingClientRect();
       let left = rect.left;
-      // Adjust if goes offscreen (w-48 is approx 192px)
-      // We check if the menu would overflow the window width
       if (left + 192 > window.innerWidth) {
-        left = window.innerWidth - 192 - 16; // 16px padding from right
+        left = window.innerWidth - 192 - 16;
       }
-      // Ensure it doesn't go off the left edge either
       if (left < 0) left = 16;
 
       setAiMenuPos({
@@ -106,7 +114,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
     }
   };
 
-  // Close menu on scroll or resize
   useEffect(() => {
     const handleScroll = () => {
       if (isAiMenuOpen) setIsAiMenuOpen(false);
@@ -147,7 +154,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             {saveStatus}
           </span>
 
-          {/* View Toggles */}
           <div className={`flex rounded-lg p-1 space-x-1 shrink-0 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <button
               onClick={() => setViewMode(ViewMode.EDIT)}
@@ -172,7 +178,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             </button>
           </div>
 
-          {/* Layout Toggle (Only visible in Split View) */}
           {viewMode === ViewMode.SPLIT && (
              <button
                onClick={toggleLayout}
@@ -185,7 +190,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-           {/* Undo/Redo */}
            <div className={`flex items-center space-x-1 mr-2 rounded-lg p-1 shrink-0 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <button
                 onClick={onUndo}
@@ -205,7 +209,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
               </button>
            </div>
 
-           {/* Search Bar */}
            <div className="relative group mx-2 hidden sm:block shrink-0">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className={`h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
@@ -219,7 +222,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             />
           </div>
 
-          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className={`p-2 rounded-md transition-colors shrink-0 ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
@@ -228,7 +230,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          {/* AI Actions Button */}
           <div className="relative mr-2 shrink-0">
             <button 
               ref={aiButtonRef}
@@ -252,20 +253,56 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <Trash2 size={18} />
           </button>
 
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
-            title="Open Markdown File"
-          >
-            <Upload size={18} />
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
-            accept=".md,.txt,.markdown" 
-            onChange={handleFileChange}
-          />
+          {isElectron ? (
+            <>
+              <button
+                onClick={onOpenFile}
+                className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
+                title="Open File..."
+              >
+                <FolderOpen size={18} />
+              </button>
+              <button
+                onClick={onSaveFile}
+                className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
+                title="Save File"
+              >
+                <Save size={18} />
+              </button>
+              <button
+                onClick={onSaveFileAs}
+                className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
+                title="Save File As..."
+              >
+                <FileUp size={18} />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
+                title="Open Markdown File"
+              >
+                <Upload size={18} />
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".md,.txt,.markdown"
+                onChange={handleFileChange}
+              />
+
+              <button
+                onClick={onDownload}
+                className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
+                title="Save to Disk"
+              >
+                <Download size={18} />
+              </button>
+            </>
+          )}
 
           <button 
             onClick={onCopy}
@@ -274,26 +311,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
           >
             <Copy size={18} />
           </button>
-
-          <button 
-            onClick={onDownload}
-            className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
-            title="Save to Disk"
-          >
-            <Download size={18} />
-          </button>
         </div>
       </div>
 
-      {/* AI Dropdown Menu (Fixed Position) */}
       {isAiMenuOpen && !isAiLoading && (
         <>
-          {/* Backdrop */}
           <div 
             className="fixed inset-0 z-[99] bg-transparent" 
             onClick={() => setIsAiMenuOpen(false)} 
           />
-          {/* Menu */}
           <div 
             className={`fixed w-48 border rounded-md shadow-xl overflow-hidden z-[100] animate-fade-in ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
             style={{ top: aiMenuPos.top, left: aiMenuPos.left }}
