@@ -427,6 +427,7 @@ const App: React.FC = () => {
           `}>
             <Upload size={48} className="text-blue-500 animate-bounce" />
             <span className="text-2xl font-bold">Drop Markdown file to open</span>
+            <p className="text-sm text-gray-500">.md, .markdown, .txt files are supported</p>
           </div>
         </div>
       )}
