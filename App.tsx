@@ -416,7 +416,7 @@ const App: React.FC = () => {
       {/* Drag & Drop Overlay */}
       {isDragging && (
         <div 
-          className="fixed inset-0 z-[200] bg-blue-500/10 backdrop-blur-sm border-4 border-blue-500 border-dashed m-4 rounded-xl flex items-center justify-center transition-all duration-200"
+          className={`fixed inset-0 z-[200] ${isDark ? 'bg-blue-400/20' : 'bg-blue-500/10'} backdrop-blur-sm border-4 border-blue-500 border-dashed m-4 rounded-xl flex items-center justify-center transition-all duration-200`}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
