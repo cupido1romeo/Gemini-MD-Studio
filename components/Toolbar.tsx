@@ -248,6 +248,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onClear}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
             title="Clear Editor"
+            aria-label="Clear Editor"
           >
             <Trash2 size={18} />
           </button>
@@ -256,6 +257,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={() => fileInputRef.current?.click()}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
             title="Open Markdown File"
+            aria-label="Open Markdown File"
           >
             <Upload size={18} />
           </button>
@@ -271,6 +273,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onCopy}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-500'}`}
             title="Copy to Clipboard"
+            aria-label="Copy to Clipboard"
           >
             <Copy size={18} />
           </button>
@@ -279,6 +282,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onDownload}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
             title="Save to Disk"
+            aria-label="Save to Disk"
           >
             <Download size={18} />
           </button>
