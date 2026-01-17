@@ -153,6 +153,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.EDIT)}
               className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.EDIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Edit Only"
+              aria-label="Edit Only"
             >
               <FileText size={16} />
             </button>
@@ -160,6 +161,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.SPLIT)}
               className={`p-1.5 rounded-md transition-colors hidden md:block ${viewMode === ViewMode.SPLIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Split View"
+              aria-label="Split View"
             >
               <Columns size={16} />
             </button>
@@ -167,6 +169,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.PREVIEW)}
               className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.PREVIEW ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Preview Only"
+              aria-label="Preview Only"
             >
               <Eye size={16} />
             </button>
