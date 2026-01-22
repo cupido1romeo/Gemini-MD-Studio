@@ -224,6 +224,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={toggleTheme}
             className={`p-2 rounded-md transition-colors shrink-0 ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
             title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+            aria-label={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
