@@ -48,13 +48,16 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     }
   };
 
-  const handleSelectionCheck = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
-    const target = e.currentTarget;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
+  const TEXTAREA_ID = "main-editor-textarea";
+
+  const handleSelectionCheck = () => {
+    const target = document.getElementById(TEXTAREA_ID) as HTMLTextAreaElement | null;
+    if (!target) return;
+
+    const { selectionStart, selectionEnd } = target;
     
-    if (start !== end) {
-      onSelectionChange(value.substring(start, end));
+    if (selectionStart !== selectionEnd) {
+      onSelectionChange(value.substring(selectionStart, selectionEnd));
     } else {
       onSelectionChange('');
     }
@@ -104,6 +107,7 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onValueChange={onChange}
           highlight={highlight}
           padding={24}
+          textareaId={TEXTAREA_ID}
           onSelect={handleSelectionCheck}
           onKeyUp={handleSelectionCheck}
           onClick={handleSelectionCheck}
