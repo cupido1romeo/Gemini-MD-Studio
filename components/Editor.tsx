@@ -48,12 +48,12 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     }
   };
 
-  const handleSelectionCheck = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
-    const target = e.currentTarget;
+  const handleSelectionCheck = (e: React.SyntheticEvent) => {
+    const target = e.currentTarget as HTMLTextAreaElement;
     const start = target.selectionStart;
     const end = target.selectionEnd;
     
-    if (start !== end) {
+    if (start !== null && end !== null && start !== end) {
       onSelectionChange(value.substring(start, end));
     } else {
       onSelectionChange('');
