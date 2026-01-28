@@ -48,13 +48,19 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     }
   };
 
-  const handleSelectionCheck = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
-    const target = e.currentTarget;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
+  const handleSelectionCheck = () => {
+    // react-simple-code-editor has an issue where event handlers like onClick
+    // are attached to a wrapper div, not the textarea. This causes a type
+    // mismatch (e.currentTarget is a div, not a textarea).
+    // The most robust workaround is to give the textarea a static ID and
+    // query the DOM for it directly.
+    const textarea = document.getElementById('markdown-editor') as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd } = textarea;
     
-    if (start !== end) {
-      onSelectionChange(value.substring(start, end));
+    if (selectionStart !== selectionEnd) {
+      onSelectionChange(value.substring(selectionStart, selectionEnd));
     } else {
       onSelectionChange('');
     }
@@ -107,6 +113,7 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onSelect={handleSelectionCheck}
           onKeyUp={handleSelectionCheck}
           onClick={handleSelectionCheck}
+          textareaId="markdown-editor"
           className="font-mono text-sm min-h-full"
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
