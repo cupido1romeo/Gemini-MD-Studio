@@ -153,6 +153,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.EDIT)}
               className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.EDIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Edit Only"
+              aria-label="Edit Only"
             >
               <FileText size={16} />
             </button>
@@ -160,6 +161,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.SPLIT)}
               className={`p-1.5 rounded-md transition-colors hidden md:block ${viewMode === ViewMode.SPLIT ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Split View"
+              aria-label="Split View"
             >
               <Columns size={16} />
             </button>
@@ -167,6 +169,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setViewMode(ViewMode.PREVIEW)}
               className={`p-1.5 rounded-md transition-colors ${viewMode === ViewMode.PREVIEW ? (isDark ? 'bg-gray-600 text-white' : 'bg-white text-gray-900 shadow-sm') : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900')}`}
               title="Preview Only"
+              aria-label="Preview Only"
             >
               <Eye size={16} />
             </button>
@@ -178,6 +181,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                onClick={toggleLayout}
                className={`p-1.5 rounded-md transition-colors hidden md:block shrink-0 ${hoverBg} ${textColor}`}
                title={`Switch to ${layout === 'horizontal' ? 'Vertical' : 'Horizontal'} Layout`}
+              aria-label={`Switch to ${layout === 'horizontal' ? 'Vertical' : 'Horizontal'} Layout`}
              >
                {layout === 'horizontal' ? <Rows size={16} /> : <Columns size={16} className="rotate-90" />}
              </button>
@@ -192,6 +196,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 disabled={!canUndo}
                 className={`p-1.5 rounded-md transition-colors ${canUndo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
                 title="Undo (Ctrl+Z)"
+                aria-label="Undo (Ctrl+Z)"
               >
                 <Undo size={16} />
               </button>
@@ -200,6 +205,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 disabled={!canRedo}
                 className={`p-1.5 rounded-md transition-colors ${canRedo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
                 title="Redo (Ctrl+Y)"
+                aria-label="Redo (Ctrl+Y)"
               >
                 <Redo size={16} />
               </button>
@@ -224,6 +230,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={toggleTheme}
             className={`p-2 rounded-md transition-colors shrink-0 ${hoverBg} ${isDark ? 'text-yellow-400' : 'text-gray-600'}`}
             title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+            aria-label={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -248,6 +255,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onClear}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
             title="Clear Editor"
+            aria-label="Clear Editor"
           >
             <Trash2 size={18} />
           </button>
@@ -256,6 +264,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={() => fileInputRef.current?.click()}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
             title="Open Markdown File"
+            aria-label="Open Markdown File"
           >
             <Upload size={18} />
           </button>
@@ -271,6 +280,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onCopy}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-500'}`}
             title="Copy to Clipboard"
+            aria-label="Copy to Clipboard"
           >
             <Copy size={18} />
           </button>
@@ -279,6 +289,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onDownload}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
             title="Save to Disk"
+            aria-label="Save to Disk"
           >
             <Download size={18} />
           </button>

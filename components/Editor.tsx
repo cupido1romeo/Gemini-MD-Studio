@@ -48,15 +48,19 @@ const MarkdownEditor: React.FC<EditorProps> = ({
     }
   };
 
-  const handleSelectionCheck = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
-    const target = e.currentTarget;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
-    
-    if (start !== end) {
-      onSelectionChange(value.substring(start, end));
-    } else {
-      onSelectionChange('');
+  // This event handler uses a direct DOM lookup as a workaround. The 'react-simple-code-editor'
+  // component's event handling has a type mismatch with React's SyntheticEvent after a
+  // dependency update, causing build failures. Using getElementById provides a stable way
+  // to access the underlying textarea's selection properties without type conflicts.
+  const handleSelectionCheck = () => {
+    const textarea = document.getElementById('main-editor') as HTMLTextAreaElement | null;
+    if (textarea) {
+      const { selectionStart, selectionEnd } = textarea;
+      if (selectionStart !== selectionEnd) {
+        onSelectionChange(value.substring(selectionStart, selectionEnd));
+      } else {
+        onSelectionChange('');
+      }
     }
   };
 
@@ -107,6 +111,7 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onSelect={handleSelectionCheck}
           onKeyUp={handleSelectionCheck}
           onClick={handleSelectionCheck}
+          textareaId="main-editor"
           className="font-mono text-sm min-h-full"
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
