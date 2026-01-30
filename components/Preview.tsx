@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Copy, Code, FileText, AlignLeft, Check } from 'lucide-react';
+import { Copy, Code, FileText, AlignLeft } from 'lucide-react';
 import { Theme } from '../types';
 
 interface PreviewProps {
