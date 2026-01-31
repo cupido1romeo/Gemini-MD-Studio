@@ -143,7 +143,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <span className="hidden sm:inline">MD Studio</span>
           </span>
           
-          <span className={`text-xs italic hidden md:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`} title={saveStatus}>
+          <span
+            className={`text-xs italic hidden md:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}
+            title={saveStatus}
+            aria-live="polite"
+          >
             {saveStatus}
           </span>
 
@@ -192,6 +196,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 disabled={!canUndo}
                 className={`p-1.5 rounded-md transition-colors ${canUndo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
                 title="Undo (Ctrl+Z)"
+                aria-label="Undo"
               >
                 <Undo size={16} />
               </button>
@@ -200,6 +205,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 disabled={!canRedo}
                 className={`p-1.5 rounded-md transition-colors ${canRedo ? (isDark ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm') : (isDark ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed')}`}
                 title="Redo (Ctrl+Y)"
+                aria-label="Redo"
               >
                 <Redo size={16} />
               </button>
@@ -216,6 +222,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onChange={(e) => onSearchChange(e.target.value)}
               className={`block w-full pl-10 pr-3 py-1.5 border rounded-md leading-5 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200 ${inputBg} ${inputBorder} ${textColor} ${isDark ? 'placeholder-gray-500 focus:bg-gray-700' : 'placeholder-gray-400 focus:bg-white'}`}
               placeholder="Find text..."
+              aria-label="Search text in document"
             />
           </div>
 
@@ -248,6 +255,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onClear}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}
             title="Clear Editor"
+            aria-label="Clear document content"
           >
             <Trash2 size={18} />
           </button>
@@ -256,6 +264,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={() => fileInputRef.current?.click()}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'}`}
             title="Open Markdown File"
+            aria-label="Open markdown file"
           >
             <Upload size={18} />
           </button>
@@ -271,6 +280,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onCopy}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-500'}`}
             title="Copy to Clipboard"
+            aria-label="Copy to clipboard"
           >
             <Copy size={18} />
           </button>
@@ -279,6 +289,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onDownload}
             className={`p-2 transition-colors rounded-md shrink-0 ${hoverBg} ${isDark ? 'text-gray-400 hover:text-green-400' : 'text-gray-500 hover:text-green-500'}`}
             title="Save to Disk"
+            aria-label="Save to disk"
           >
             <Download size={18} />
           </button>
