@@ -342,6 +342,7 @@ const App: React.FC = () => {
         onDownload={handleDownload}
         onUpload={handleUpload}
         onClear={() => {
+          if (content && !window.confirm('Are you sure you want to clear the editor? This cannot be easily undone.')) return;
           const empty = '';
           setContent(empty);
           setSaveStatus('Unsaved changes...');
