@@ -77,6 +77,9 @@ const Preview: React.FC<PreviewProps> = ({ content, visible, theme, onNotify }) 
               : 'bg-white text-gray-500 hover:text-gray-900 border border-gray-200'
           }`}
           title="Copy Options"
+          aria-label="Copy options"
+          aria-haspopup="menu"
+          aria-expanded={isMenuOpen}
         >
           <Copy size={18} />
         </button>
@@ -85,11 +88,14 @@ const Preview: React.FC<PreviewProps> = ({ content, visible, theme, onNotify }) 
         {isMenuOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setIsMenuOpen(false)} />
-            <div className={`
-              absolute top-10 right-0 w-48 rounded-md shadow-lg z-20 py-1 overflow-hidden border
-              animate-fade-in
-              ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}
-            `}>
+            <div
+              className={`
+                absolute top-10 right-0 w-48 rounded-md shadow-lg z-20 py-1 overflow-hidden border
+                animate-fade-in
+                ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}
+              `}
+              role="menu"
+            >
               <button
                 onClick={() => handleCopy('markdown')}
                 className={`flex items-center w-full px-4 py-2 text-sm text-left transition-colors ${
@@ -97,6 +103,7 @@ const Preview: React.FC<PreviewProps> = ({ content, visible, theme, onNotify }) 
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white' 
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 }`}
+                role="menuitem"
               >
                 <FileText size={14} className="mr-2" />
                 <span>Copy Markdown</span>
@@ -109,6 +116,7 @@ const Preview: React.FC<PreviewProps> = ({ content, visible, theme, onNotify }) 
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white' 
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 }`}
+                role="menuitem"
               >
                 <AlignLeft size={14} className="mr-2" />
                 <span>Copy Plain Text</span>
@@ -121,6 +129,7 @@ const Preview: React.FC<PreviewProps> = ({ content, visible, theme, onNotify }) 
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white' 
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 }`}
+                role="menuitem"
               >
                 <Code size={14} className="mr-2" />
                 <span>Copy HTML</span>

@@ -108,6 +108,8 @@ const MarkdownEditor: React.FC<EditorProps> = ({
           onKeyUp={handleSelectionCheck}
           onClick={handleSelectionCheck}
           className="font-mono text-sm min-h-full"
+          textareaId="markdown-editor-textarea"
+          aria-label="Markdown editor"
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
             fontSize: 14,
