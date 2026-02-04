@@ -106,18 +106,21 @@ const Toolbar: React.FC<ToolbarProps> = ({
     }
   };
 
-  // Close menu on scroll or resize
+  // Close menu on scroll, resize, or Escape key
   useEffect(() => {
-    const handleScroll = () => {
+    const handleClose = (e?: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== 'Escape') return;
       if (isAiMenuOpen) setIsAiMenuOpen(false);
     };
     if (isAiMenuOpen) {
-      window.addEventListener('scroll', handleScroll, { capture: true });
-      window.addEventListener('resize', handleScroll);
+      window.addEventListener('scroll', handleClose, { capture: true });
+      window.addEventListener('resize', handleClose);
+      window.addEventListener('keydown', handleClose);
     }
     return () => {
-      window.removeEventListener('scroll', handleScroll, { capture: true });
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('scroll', handleClose, { capture: true });
+      window.removeEventListener('resize', handleClose);
+      window.removeEventListener('keydown', handleClose);
     };
   }, [isAiMenuOpen]);
 
@@ -143,7 +146,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <span className="hidden sm:inline">MD Studio</span>
           </span>
           
-          <span className={`text-xs italic hidden md:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`} title={saveStatus}>
+          <span
+            className={`text-xs italic hidden md:inline-block w-32 truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}
+            title={saveStatus}
+            aria-live="polite"
+          >
             {saveStatus}
           </span>
 
@@ -235,6 +242,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
               onClick={toggleAiMenu}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isAiLoading ? 'bg-purple-900/50 text-purple-300 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
               disabled={isAiLoading}
+              aria-haspopup="menu"
+              aria-expanded={isAiMenuOpen}
             >
               <Sparkles size={16} />
               <span className="hidden sm:inline">{isAiLoading ? 'Thinking...' : 'AI Assist'}</span>
@@ -297,17 +306,34 @@ const Toolbar: React.FC<ToolbarProps> = ({
           <div 
             className={`fixed w-48 border rounded-md shadow-xl overflow-hidden z-[100] animate-fade-in ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
             style={{ top: aiMenuPos.top, left: aiMenuPos.left }}
+            role="menu"
           >
-            <button onClick={() => handleAiActionClick(AiActionType.PROOFREAD)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
+            <button
+              onClick={() => handleAiActionClick(AiActionType.PROOFREAD)}
+              className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              role="menuitem"
+            >
               Proofread & Fix
             </button>
-            <button onClick={() => handleAiActionClick(AiActionType.CONTINUE)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
+            <button
+              onClick={() => handleAiActionClick(AiActionType.CONTINUE)}
+              className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              role="menuitem"
+            >
               Continue Writing
             </button>
-            <button onClick={() => handleAiActionClick(AiActionType.SUMMARIZE)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
+            <button
+              onClick={() => handleAiActionClick(AiActionType.SUMMARIZE)}
+              className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              role="menuitem"
+            >
               Generate Summary
             </button>
-             <button onClick={() => handleAiActionClick(AiActionType.FORMAT)} className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}>
+             <button
+              onClick={() => handleAiActionClick(AiActionType.FORMAT)}
+              className={`w-full text-left px-4 py-2 text-sm transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              role="menuitem"
+            >
               Format Document
             </button>
           </div>
