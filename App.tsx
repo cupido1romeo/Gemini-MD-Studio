@@ -402,10 +402,14 @@ const App: React.FC = () => {
         
         {/* Notification Toast */}
         {notification && (
-          <div className={`
-            absolute bottom-6 right-6 px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 animate-fade-in-up
-            ${notification.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}
-          `}>
+          <div
+            className={`
+              absolute bottom-6 right-6 px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 animate-fade-in-up
+              ${notification.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}
+            `}
+            role="status"
+            aria-live="polite"
+          >
             {notification.msg}
           </div>
         )}
